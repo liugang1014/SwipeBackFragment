@@ -1,16 +1,19 @@
 package me.yokeyword.swipebackfragment;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
-import android.support.v4.app.Fragment;
+
+
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -222,7 +225,7 @@ public class SwipeBackLayout extends FrameLayout {
         boolean drawChild = super.drawChild(canvas, child, drawingTime);
         if (isDrawView && mScrimOpacity > 0 && mHelper.getViewDragState() != ViewDragHelper.STATE_IDLE) {
             drawShadow(canvas, child);
-            drawScrim(canvas, child);
+            //drawScrim(canvas, child);
         }
         return drawChild;
     }
@@ -326,18 +329,10 @@ public class SwipeBackLayout extends FrameLayout {
 
                 if (mPreFragment == null) {
                     if (mFragment != null) {
-                        List<Fragment> fragmentList = mFragment.getFragmentManager().getFragments();
-                        if (fragmentList != null && fragmentList.size() > 1) {
-                            int index = fragmentList.indexOf(mFragment);
-                            for (int i = index - 1; i >= 0; i--) {
-                                Fragment fragment = fragmentList.get(i);
-                                if (fragment != null && fragment.getView() != null) {
-                                    fragment.getView().setVisibility(VISIBLE);
-                                    mPreFragment = fragment;
-                                    break;
-                                }
-                            }
-                        }
+                        int n=mFragment.getFragmentManager().getBackStackEntryCount();
+                        Fragment fragment =FragmentManagerHack.getFragment(mFragment.getFragmentManager(),n-2);
+                        fragment.getView().setVisibility(VISIBLE);
+                        mPreFragment = fragment;
                     }
                 } else {
                     View preView = mPreFragment.getView();
@@ -370,6 +365,7 @@ public class SwipeBackLayout extends FrameLayout {
             }
             invalidate();
 
+
             if (mListeners != null && !mListeners.isEmpty()
                     && mHelper.getViewDragState() == STATE_DRAGGING && mScrollPercent <= 1 && mScrollPercent > 0) {
                 for (OnSwipeListener listener : mListeners) {
@@ -386,6 +382,11 @@ public class SwipeBackLayout extends FrameLayout {
                         mFragment.mLocking = true;
                         mFragment.getFragmentManager().popBackStackImmediate();
                         mFragment.mLocking = false;
+                        if (mPreFragment!=null){
+                            mPreFragment.getView().setVisibility(VISIBLE);
+                            Log.d("onViewPositionChanged","Pre left="+mPreFragment.getView().getLeft()+",cur left="+mFragment.getView().getLeft());
+                            mPreFragment.getView().setBackgroundColor(0xff567890);
+                        }
                     }
                     if (mPreFragment instanceof SwipeBackFragment) {
                         ((SwipeBackFragment) mPreFragment).mLocking = false;

@@ -1,12 +1,14 @@
 package me.yokeyword.swipebackfragment;
 
+import android.animation.Animator;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -73,7 +75,7 @@ public class SwipeBackFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden && mSwipeBackLayout != null) {
-            mSwipeBackLayout.hiddenFragment();
+          //  mSwipeBackLayout.hiddenFragment();
         }
     }
 
@@ -112,12 +114,18 @@ public class SwipeBackFragment extends Fragment {
         }
     }
 
+//    @Override
+//    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+//        if (mLocking) {
+//            return mNoAnim;
+//        }
+//        return super.onCreateAnimation(transit, enter, nextAnim);
+//    }
+
+
     @Override
-    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        if (mLocking) {
-            return mNoAnim;
-        }
-        return super.onCreateAnimation(transit, enter, nextAnim);
+    public Animator onCreateAnimator(int transit, boolean enter, int nextAnim) {
+        return super.onCreateAnimator(transit, enter, nextAnim);
     }
 
     protected int getWindowBackground() {
